@@ -24,7 +24,12 @@ void main() => runApp(const TravelBookingApp());
 // HẰNG SỐ VÀ DỮ LIỆU MẪU
 // ---------------------------------------------------------------------------
 
-const Color kBrandBlue = Color(0xFF1565C0);
+const Color kBrandBlue = Color(0xFF1A73E8);
+const Color kBrandBlueLight = Color(0xFFE8F1FE);
+const Color kTextPrimary = Color(0xFF1F2937);
+const Color kTextSecondary = Color(0xFF6B7280);
+const Color kPageGrey = Color(0xFFF3F4F6);
+const Color kBorderGrey = Color(0xFFE5E7EB);
 
 /// Lớn hơn mốc này thì màn hình chi tiết chuyển sang bố cục 2 cột.
 const double kTwoColumnBreakpoint = 600;
@@ -126,16 +131,95 @@ class LabConfig {
 class TravelBookingApp extends StatelessWidget {
   const TravelBookingApp({super.key});
 
+  ThemeData _buildTheme() {
+    // Material 3: fromSeed sinh màu ngả xám, nên ghi đè các màu chính để có nền
+    // trắng và xanh dương tươi như đa số ứng dụng đặt phòng.
+    final colorScheme = ColorScheme.fromSeed(seedColor: kBrandBlue).copyWith(
+      primary: kBrandBlue,
+      onPrimary: Colors.white,
+      primaryContainer: kBrandBlueLight,
+      onPrimaryContainer: const Color(0xFF0B4FB3),
+      secondaryContainer: kBrandBlueLight,
+      onSecondaryContainer: const Color(0xFF0B4FB3),
+      surface: Colors.white,
+      onSurface: kTextPrimary,
+      onSurfaceVariant: kTextSecondary,
+      surfaceContainer: Colors.white,
+      surfaceContainerLow: kPageGrey,
+      outline: const Color(0xFF9CA3AF),
+      outlineVariant: kBorderGrey,
+      error: const Color(0xFFE53935),
+    );
+
+    final base = ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      // Cỡ chữ tập trung một chỗ, letterSpacing = 0 cho chữ tiếng Việt gọn hơn.
+      // ThemeData trộn các giá trị này vào kiểu mặc định của Material.
+      textTheme: const TextTheme(
+        titleLarge: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          height: 1.3,
+          letterSpacing: 0,
+        ),
+        titleMedium: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          height: 1.4,
+          letterSpacing: 0,
+        ),
+        titleSmall: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          height: 1.4,
+          letterSpacing: 0,
+        ),
+        bodyLarge: TextStyle(fontSize: 15, height: 1.4, letterSpacing: 0),
+        bodyMedium: TextStyle(fontSize: 14, height: 1.45, letterSpacing: 0),
+        bodySmall: TextStyle(
+          fontSize: 12,
+          height: 1.35,
+          letterSpacing: 0,
+          color: kTextSecondary,
+        ),
+        labelLarge: TextStyle(fontSize: 14, letterSpacing: 0),
+        labelSmall: TextStyle(fontSize: 11, letterSpacing: 0),
+      ),
+    );
+
+    // Nút và chip lấy kiểu chữ từ base.textTheme để giữ nguyên font của theme.
+    return base.copyWith(
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(0, 48),
+          textStyle: base.textTheme.labelLarge?.copyWith(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: Colors.white,
+        side: const BorderSide(color: kBorderGrey),
+        labelStyle: base.textTheme.bodySmall?.copyWith(
+          fontSize: 13,
+          color: kTextPrimary,
+        ),
+      ),
+      drawerTheme: const DrawerThemeData(backgroundColor: Colors.white),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Travel Booking',
       debugShowCheckedModeBanner: false,
-      // Material 3: toàn bộ bảng màu được sinh ra từ một màu xanh dương gốc.
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: kBrandBlue),
-      ),
+      theme: _buildTheme(),
       home: const LayoutLabPage(),
     );
   }
@@ -179,6 +263,8 @@ class _LayoutLabPageState extends State<LayoutLabPage> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Travel Booking · Layout Lab'),
+            scrolledUnderElevation: 0,
+            shape: const Border(bottom: BorderSide(color: kBorderGrey)),
             actions: [
               if (!hasSidePanel)
                 // Builder: tạo context nằm dưới Scaffold để gọi Scaffold.of().
@@ -389,7 +475,10 @@ class _HotelDetailScreenState extends State<HotelDetailScreen> {
         // Expanded với flex 5:6: chia chiều rộng theo tỉ lệ cho 2 cột.
         Expanded(
           flex: 5,
-          child: Padding(padding: const EdgeInsets.all(16), child: _buildHero()),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: _buildHero(),
+          ),
         ),
         Expanded(flex: 6, child: _scrollIfEnabled(_buildInfo())),
       ],
@@ -578,12 +667,7 @@ class _RatingCard extends StatelessWidget {
         children: [
           const Icon(Icons.star_rounded, color: Colors.amber, size: 30),
           const SizedBox(width: 8),
-          Text(
-            '4.8',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Text('4.8', style: theme.textTheme.titleLarge),
           const SizedBox(width: 12),
           // Expanded + ellipsis: chữ tự co lại trên khung xem trước hẹp.
           Expanded(
@@ -624,9 +708,8 @@ class TitleSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final nameStyle = textTheme.titleLarge?.copyWith(
-      fontWeight: FontWeight.bold,
-    );
+    final nameStyle = textTheme.titleLarge;
+    final addressStyle = textTheme.bodyMedium?.copyWith(color: kTextSecondary);
     final icon = Icon(
       Icons.location_on,
       color: Theme.of(context).colorScheme.primary,
@@ -644,7 +727,7 @@ class TitleSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(config.hotelName, style: nameStyle),
-              Text(kHotelAddress, style: textTheme.bodyMedium),
+              Text(kHotelAddress, style: addressStyle),
             ],
           ),
         ],
@@ -673,7 +756,7 @@ class TitleSection extends StatelessWidget {
                 kHotelAddress,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: textTheme.bodyMedium,
+                style: addressStyle,
               ),
             ],
           ),
@@ -787,7 +870,10 @@ class _AxisLegend extends StatelessWidget {
     return Wrap(
       spacing: 12,
       children: [
-        Text('Đỏ: main axis (ngang)', style: style?.copyWith(color: Colors.red)),
+        Text(
+          'Đỏ: main axis (ngang)',
+          style: style?.copyWith(color: Colors.red),
+        ),
         Text(
           'Xanh: cross axis (dọc)',
           style: style?.copyWith(color: Colors.blue),
@@ -885,12 +971,7 @@ class AmenitiesSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Tiện ích',
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-        ),
+        Text('Tiện ích', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         config.handleOverflow
             // Wrap: hết chỗ trên dòng hiện tại thì tự đưa con xuống dòng mới.
@@ -922,12 +1003,7 @@ class DescriptionSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Mô tả',
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-        ),
+        Text('Mô tả', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 4),
         // maxLines = null: không giới hạn số dòng, hiện toàn bộ nội dung.
         Text(
@@ -1032,7 +1108,8 @@ class _PriceLabel extends StatelessWidget {
           overflow: overflow,
           style: theme.textTheme.titleMedium?.copyWith(
             color: theme.colorScheme.primary,
-            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
           ),
         ),
         Text.rich(
@@ -1100,12 +1177,7 @@ class LayoutLabPanel extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                'Layout Lab',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              child: Text('Layout Lab', style: theme.textTheme.titleLarge),
             ),
             TextButton.icon(
               onPressed: () => onChanged(const LabConfig()),
@@ -1191,10 +1263,11 @@ class LayoutLabPanel extends StatelessWidget {
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: const Text('Bật xử lý overflow'),
-          subtitle: const Text(
+          subtitle: Text(
             'Tắt: dùng Row, Column thường và thấy vạch sọc vàng-đen '
             '(chỉ hiện ở debug mode).\n'
             'Bật: dùng Expanded, Wrap, ellipsis, SingleChildScrollView.',
+            style: theme.textTheme.bodySmall,
           ),
           value: config.handleOverflow,
           onChanged: (value) =>
@@ -1218,7 +1291,6 @@ class _LabHeading extends StatelessWidget {
         text,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
           color: Theme.of(context).colorScheme.primary,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );
@@ -1250,6 +1322,7 @@ class _DropdownField<T> extends StatelessWidget {
         DropdownButton<T>(
           isExpanded: true,
           value: value,
+          style: Theme.of(context).textTheme.bodyMedium,
           items: [
             for (final option in options)
               DropdownMenuItem(value: option, child: Text(optionLabel(option))),

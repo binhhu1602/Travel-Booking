@@ -44,11 +44,7 @@ void main() {
       testWidgets('không tràn ở $width px với nội dung tối đa', (tester) async {
         final errors = await pumpDetail(
           tester,
-          LabConfig(
-            previewWidth: width,
-            useLongName: true,
-            extraAmenities: 12,
-          ),
+          LabConfig(previewWidth: width, useLongName: true, extraAmenities: 12),
         );
         expect(errors, isEmpty);
       });
@@ -94,9 +90,7 @@ void main() {
         height: 320,
       );
       expect(
-        errors.where(
-          (e) => e.exceptionAsString().contains('on the bottom'),
-        ),
+        errors.where((e) => e.exceptionAsString().contains('on the bottom')),
         isNotEmpty,
       );
     });
@@ -175,15 +169,14 @@ void main() {
     final cover = tester.getRect(find.byIcon(Icons.apartment));
     expect(cover, isNotNull);
     final hero = tester.getRect(find.byType(HeroImageSection));
-    final card = tester
-        .getRect(
-          find
-              .ancestor(
-                of: find.text('Tuyệt vời'),
-                matching: find.byType(Container),
-              )
-              .first,
-        );
+    final card = tester.getRect(
+      find
+          .ancestor(
+            of: find.text('Tuyệt vời'),
+            matching: find.byType(Container),
+          )
+          .first,
+    );
     expect(card.height, HeroImageSection.ratingCardHeight);
     final imageBottom = hero.bottom - HeroImageSection.ratingCardHeight / 2;
     expect(card.center.dy, moreOrLessEquals(imageBottom));
@@ -238,10 +231,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Flexible (loose)'));
       await tester.pumpAndSettle();
-      expect(
-        find.textContaining('Thẻ chỉ rộng vừa nội dung'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Thẻ chỉ rộng vừa nội dung'), findsOneWidget);
     });
 
     testWidgets('khung 900px hoạt động trong cửa sổ nhỏ hơn', (tester) async {
