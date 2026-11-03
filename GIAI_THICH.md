@@ -1,6 +1,6 @@
 # Giải thích: Travel Booking – Layout Lab
 
-Toàn bộ code nằm trong [lib/main.dart](lib/main.dart). Có thể dán file này vào [DartPad](https://dartpad.dev) hoặc chạy `flutter run -d chrome`.
+Code được chia thành các module trong [lib/modules/](lib/modules/), cấu trúc xem ở [README.md](README.md). Chạy bằng `flutter run -d chrome`.
 
 Mở Layout Lab: cửa sổ rộng từ 900px thì bảng nằm ở cột bên phải; hẹp hơn thì bấm icon điều chỉnh trên AppBar để mở Drawer.
 
@@ -11,18 +11,18 @@ Mở Layout Lab: cửa sổ rộng từ 900px thì bảng nằm ở cột bên p
 | `Stack` + `Positioned` | `HeroImageSection`: huy hiệu `top: 12, left: 12`, tim `top: 8, right: 8` | Bấm trái tim để đổi trạng thái; kéo slider, các lớp vẫn neo đúng góc |
 | `Clip.none` | `Stack(clipBehavior: Clip.none)` + `bottom: -ratingCardHeight / 2` | Thẻ rating lấn một nửa ra ngoài ảnh ở mọi chiều rộng |
 | `Expanded` trong `Row` | `TitleSection`: `Expanded(child: Column(...))` | Bật "Tên khách sạn siêu dài", tên xuống dòng rồi cắt thay vì tràn |
-| `maxLines` + `TextOverflow.ellipsis` | `Text(config.hotelName, maxLines: 2, overflow: TextOverflow.ellipsis)` | Kéo slider về 240, tên và địa chỉ hiện dấu "…" |
+| `maxLines` + `TextOverflow.ellipsis` | `Text(options.hotelName, maxLines: 2, overflow: TextOverflow.ellipsis)` | Kéo slider về 240, tên và địa chỉ hiện dấu "…" |
 | `flex` | `StatsRow`: `_wrapCard(card, 2)`, `_wrapCard(card, 1)`, `_wrapCard(card, 1)` | Chọn Expanded, thẻ Phòng rộng gấp đôi hai thẻ còn lại |
-| `MainAxisAlignment` | `Row(mainAxisAlignment: config.mainAxisAlignment)` | Chọn Flexible rồi đổi dropdown đỏ |
-| `CrossAxisAlignment` | `Row(crossAxisAlignment: config.crossAxisAlignment)` | Đổi dropdown xanh; thẻ Phòng cao hơn nên thấy rõ start, center, end, stretch |
+| `MainAxisAlignment` | `Row(mainAxisAlignment: options.mainAxisAlignment)` | Chọn Flexible rồi đổi dropdown đỏ |
+| `CrossAxisAlignment` | `Row(crossAxisAlignment: options.crossAxisAlignment)` | Đổi dropdown xanh; thẻ Phòng cao hơn nên thấy rõ start, center, end, stretch |
 | `Flexible(fit: FlexFit.loose)` và `Expanded` | `StatsRow._wrapCard` | Đổi segmented button trên cùng hàng thống kê |
 | `Wrap` | `AmenitiesSection`: `Wrap(spacing: 8, runSpacing: 8)` | Bấm "+ Thêm tiện ích", chip tự xuống dòng |
 | `SingleChildScrollView` | `_scrollIfEnabled` trong `HotelDetailScreen` | Bấm "Xem thêm", nội dung cuộn được thay vì tràn đáy |
 | Hiển thị/thu gọn văn bản | `DescriptionSection`: `maxLines: isExpanded ? null : 3` | Bấm "Xem thêm / Thu gọn" |
 | `Flexible` + `Expanded` trên thanh đáy | `BookingBar`: `Flexible(_PriceLabel)` + `Expanded(button)` | Kéo slider về 240, giá co lại, nút vẫn nằm trong khung |
-| `SizedBox` mô phỏng thiết bị | `_PreviewArea`: `SizedBox(width: config.previewWidth, ...)` | Kéo slider từ 240 đến 900 |
-| `LayoutBuilder` | `HotelDetailScreen`: `constraints.maxWidth > kTwoColumnBreakpoint` | Kéo slider từ 600 lên 610, bố cục đổi sang 2 cột |
-| Vạch sọc overflow | Nhánh `!config.handleOverflow` trong từng widget | Tắt "Bật xử lý overflow" |
+| `SizedBox` mô phỏng thiết bị | `PreviewArea`: `SizedBox(width: config.previewWidth, ...)` | Kéo slider từ 240 đến 900 |
+| `LayoutBuilder` | `HotelDetailScreen`: `constraints.maxWidth > twoColumnBreakpoint` | Kéo slider từ 600 lên 610, bố cục đổi sang 2 cột |
+| Vạch sọc overflow | Nhánh `!options.handleOverflow` trong từng widget | Tắt "Bật xử lý overflow" |
 
 **Ba điểm dễ nhầm mà app cố ý làm lộ ra:**
 
